@@ -13,5 +13,18 @@ class restSerializer(APIView):
         serializer = table_restSerializer(rests,many=True)
         return Response(serializer.data)
 
-    def post(self):
-        pass
+    def post(self,request):
+        serializer =table_restSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=201)
+        return Response(serializer.errors, status=404)
+
+
+    def delete(self, request):
+        try:
+            rests=table_rest.objects.get(pk=request.data)
+        except table_rest.DoesNotExist:
+            raise 404
+        rests.delete()
+        return Response(status=204)
